@@ -17,6 +17,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.metrics import f1_score
 
 import nltk
+nltk.download('omw-1.4')
 nltk.download(['punkt', 'wordnet'])
 
 def load_data(database_filepath):
@@ -46,39 +47,37 @@ def load_data(database_filepath):
     
     return X, Y, category_names
 
+url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 
-def tokenize(text):
-    """
-    Tokenizes a given text by removing URLs and lemmatizing the words.
+def tokenize(message):
+        """
+        Tokenize a given message by removing URLs, tokenizing the message into individual words,
+        lemmatizing each word, and converting all words to lowercase.
 
-    Args:
-        text (str): The input text to be tokenized.
+        Parameters:
+            message (str): The message to be tokenized.
 
-    Returns:
-        list: A list of cleaned and lemmatized tokens.
-
-    """
-    def tokenize(message):
-        if text is None or not isinstance(text, str):
+        Returns:
+            list: A list of clean tokens representing the tokenized message. If the input message is None or not a string,
+                  an empty list is returned.
+        """
+                
+        if message is None or not isinstance(message, str):
             return []  # Return an empty list for None or non-string inputs
 
-        # Normalize case and remove punctuation
-        text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
-        
-        # Replace URLs
-        url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-        detected_urls = re.findall(url_regex, text)
+        detected_urls = re.findall(url_regex, message)
         for url in detected_urls:
-            text = text.replace(url, "urlplaceholder")
-        
-        # Tokenize
-        tokens = word_tokenize(text)
-        
-        # Lemmatize
-        lemmatizer = WordNetLemmatizer()
-        clean_tokens = [lemmatizer.lemmatize(tok).lower().strip() for tok in tokens if tok.strip()]
+            message = message.replace(url, "urlplaceholder")
 
-        return clean_tokens or []
+        tokens = word_tokenize(message)
+        lemmatizer = WordNetLemmatizer()
+
+        clean_tokens = []
+        for tok in tokens:
+            clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+            clean_tokens.append(clean_tok)
+
+        return clean_tokens if clean_tokens else []  # Return an empty list if clean_tokens is None or []
     
 def build_model():
     """
@@ -90,11 +89,8 @@ def build_model():
         A GridSearchCV object containing the optimized model.
     """
     
-    def custom_analyzer(doc):
-        return tokenize(doc)
-
     pipeline = Pipeline([
-        ('vect', CountVectorizer(analyzer=custom_analyzer)),
+        ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(LogisticRegression(max_iter=1000)))
     ])
@@ -109,11 +105,15 @@ def build_model():
 
     cv = GridSearchCV(pipeline, param_grid=parameters, 
                       #cv=3, n_jobs=-1, 
-                      #verbose=2, 
+                      scoring='f1_weighted', 
+                      verbose=2, 
                       error_score='raise'
                       )
-
     print("GridSearchCV object created successfully")
+    
+    #model = cv.best_estimator_(**cv.best_params_)
+        
+    
     return cv
 
 

@@ -91,8 +91,7 @@ def clean_data(df):
     df_final.drop_duplicates(inplace=True)
     
     # drop child_alone category
-    
-    df_final.drop('child_alone', axis=1, inplace=True)
+    # df_final.drop('child_alone', axis=1, inplace=True)
     
     # Replace the value 2 in the 'related' column with 1
     df_final['related'] = df_final['related'].replace(2, 1)        

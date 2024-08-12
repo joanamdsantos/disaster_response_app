@@ -4,13 +4,16 @@ import nltk
 import pandas as pd
 import numpy as np
 import pickle
+import xgboost as xgb
+from xgboost import XGBClassifier
 from sqlalchemy import create_engine
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
@@ -92,19 +95,24 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(LogisticRegression(max_iter=1000)))
+        ('clf', MultiOutputClassifier(XGBClassifier(random_state=42)))
     ])
 
     parameters = {
         'vect__max_df': (0.5, 0.75, 1.0),
         'vect__max_features': (None, 5000, 10000),
         'tfidf__use_idf': (True, False),
-        'clf__estimator__C': [1, 10, 100],
-        'clf__estimator__penalty': ['l2'],        
-    }
+        #'clf__estimator__n_estimators': [100, 200, 500],
+        'clf__estimator__learning_rate': [0.01,0.05,0.1],
+        'clf__estimator__gamma': [0, 0.5, 1],
+        #'clf__estimator__reg_alpha': [0, 0.5, 1],
+        #'clf__estimator__reg_lambda': [0.5, 1, 5],
+        #'clf__estimator__base_score': [0.2, 0.5, 1],
+        }
 
     cv = GridSearchCV(pipeline, param_grid=parameters, 
-                      #cv=3, n_jobs=-1, 
+                      cv=3, 
+                      #n_jobs=2, 
                       scoring='f1_weighted', 
                       verbose=2, 
                       error_score='raise'
@@ -137,8 +145,16 @@ def evaluate_model(model, X_test, Y_test, category_names):
     
     df_scores = {}
     for i in range(len(Y_test.columns)):
-        accuracy = (y_pred[:,i] == Y_test.iloc[:,i]).mean()
-        df_scores[Y_test.columns[i]] = accuracy
+        category = Y_test.columns[i]
+        print(f"Category: {category}")
+        report = classification_report(Y_test.iloc[:, i], y_pred[:, i])
+        accuracy = accuracy_score(Y_test.iloc[:, i], y_pred[:, i])
+        print(report)
+        print(f"Accuracy: {accuracy}")
+        #df_scores[category] = {
+            #'report': report,
+            #'accuracy': accuracy
+        #}
     
     return df_scores
 

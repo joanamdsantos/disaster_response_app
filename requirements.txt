@@ -47,7 +47,6 @@ jupyter-server
 jupyterlab
 jupyterlab-pygments
 jupyterlab-server
-lightgbm==4.3.0
 llvmlite==0.36.0
 locket==0.2.1
 MarkupSafe

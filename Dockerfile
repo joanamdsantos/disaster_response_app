@@ -13,6 +13,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY . .
+COPY ./app /app
+
+COPY ./models /app/models
+COPY ./data /app/data
 
 CMD ["python", "run.py"]

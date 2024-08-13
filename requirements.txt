@@ -41,12 +41,6 @@ Jinja2
 joblib==1.1.1
 json5
 jsonschema
-jupyter-client
-jupyter-core
-jupyter-server
-jupyterlab
-jupyterlab-pygments
-jupyterlab-server
 llvmlite==0.36.0
 locket==0.2.1
 MarkupSafe

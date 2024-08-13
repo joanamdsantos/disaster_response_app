@@ -27,7 +27,6 @@ entrypoints==0.3
 Flask==2.0.3
 fsspec @ file:///opt/conda/conda-bld/fsspec_1642510437511/work
 greenlet==2.0.2
-gunicorn==21.2.0
 HeapDict @ file:///Users/ktietz/demo/mc3/conda-bld/heapdict_1630598515714/work
 idna @ file:///tmp/build/80754af9/idna_1637925883363/work
 immutables @ file:///tmp/build/80754af9/immutables_1628888996840/work

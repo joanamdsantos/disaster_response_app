@@ -50,7 +50,6 @@ jupyterlab-server
 lightgbm
 llvmlite
 locket
-mistune
 mkl-fft
 mkl-random
 mkl-service

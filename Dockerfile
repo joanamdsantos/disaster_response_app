@@ -1,8 +1,11 @@
 FROM python:3.6-alpine3.13
-RUN apt-get update && apt-get install -y \
-    build-essential \
+RUN apk add --no-cache \
+    build-base \
     gcc \
-    && rm -rf /var/lib/apt/lists/*
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --upgrade pip

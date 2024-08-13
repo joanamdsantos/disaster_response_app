@@ -72,7 +72,8 @@ def index():
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs
-    return render_template('master.html', ids=ids, graphJSON=graphJSON)
+    return render_template('master.html', ids=ids, graphJSON=graphJSON, 
+                           genre_names=genre_names, genre_counts=genre_counts)
 
 
 # web page that handles user query and displays model results

@@ -29,7 +29,9 @@ def tokenize(text):
 
 # load data
 #engine = create_engine('sqlite:///../data/DisasterResponse.db')
-database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
+
+#database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
+database_path = '/data/DisasterResponse.db'
 engine = create_engine(f'sqlite:///{database_path}')
 
 df = pd.read_sql_table('DisasterResponse', engine)

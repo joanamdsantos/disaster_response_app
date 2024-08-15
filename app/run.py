@@ -3,9 +3,11 @@ import os
 import plotly
 import pandas as pd
 import joblib
+import pickle
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from xgboost.compat import XGBoostLabelEncoder
 
 from flask import Flask
 from flask import render_template, request, jsonify
@@ -13,6 +15,9 @@ from plotly.graph_objs import Bar
 #from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+import nltk
+nltk.download('punkt_tab')
+nltk.download('wordnet')
 
 app = Flask(__name__)
 
@@ -30,14 +35,29 @@ def tokenize(text):
 # load data
 #engine = create_engine('sqlite:///../data/DisasterResponse.db')
 
-database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
-#database_path = '/data/DisasterResponse.db'
+#database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
+database_path = '/app/data/DisasterResponse.db'
 engine = create_engine(f'sqlite:///{database_path}')
 
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("../models/classifier.pk")
+#model = joblib.load("/app/models/classifier.pk")
+
+class CustomUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == "__main__" and name == "tokenize":
+            return tokenize
+        if module == "xgboost.compat" and name == "XGBoostLabelEncoder":
+            return XGBoostLabelEncoder
+        return super().find_class(module, name)
+
+def custom_load(file_path):
+    with open(file_path, 'rb') as f:
+        return CustomUnpickler(f).load()
+
+# Custom load method
+model = custom_load("/app/models/classifier.pk")
 
 
 # index webpage displays cool visuals and receives user input text for model

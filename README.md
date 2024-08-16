@@ -124,4 +124,6 @@ We can observe from the weighted F1-score that XGboost surpasses the Random Fore
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
 
-3. Go to http://0.0.0.0:3001/
+3. Go to http://0.0.0.0:8080/
+
+4. A docker image is also available on docker hub at [joanamdsantos/disaster_response_app](https://hub.docker.com/r/joanamdsantos/disaster_response_app).

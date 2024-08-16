@@ -33,11 +33,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-#engine = create_engine('sqlite:///../data/DisasterResponse.db')
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 
 #database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
-database_path = '/app/data/DisasterResponse.db'
-engine = create_engine(f'sqlite:///{database_path}')
+#database_path = '/app/data/DisasterResponse.db'
+#engine = create_engine(f'sqlite:///{database_path}')
 
 df = pd.read_sql_table('DisasterResponse', engine)
 
@@ -57,7 +57,7 @@ def custom_load(file_path):
         return CustomUnpickler(f).load()
 
 # Custom load method
-model = custom_load("/app/models/classifier.pk")
+model = custom_load("../models/classifier.pk")
 
 
 # index webpage displays cool visuals and receives user input text for model

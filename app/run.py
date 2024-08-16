@@ -70,6 +70,10 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    # extract data for category distribution
+    category_counts = df.iloc[:, 4:].sum().sort_values(ascending=False)
+    category_names = list(category_counts.index)
+    
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -77,17 +81,47 @@ def index():
             'data': [
                 Bar(
                     x=genre_names,
-                    y=genre_counts
+                    y=genre_counts,
+                    marker=dict(color='green')
                 )
             ],
-
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': {
+                    'text': 'Distribution of Message Genres',
+                    'font': {'size': 24, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'}
+                },
                 'yaxis': {
-                    'title': "Count"
+                    'title': "Count",
+                        'font': {'size': 16, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'}
                 },
                 'xaxis': {
-                    'title': "Genre"
+                    'title': "Genre",
+                        'font': {'size': 16, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'}
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+            'layout': {
+                'title': {
+                    'text': 'Distribution of Message Categories',
+                    'font': {'size': 24, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'},
+                    },
+                'yaxis': {
+                    'title': "Count",
+                        'font': {'size': 16, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'}
+                },
+                'xaxis': {
+                    'title': {
+                        'text': "Category",
+                        'font': {'size': 16, 'color': 'black', 'family': 'Arial, sans-serif', 'weight': 'bold'}
+                    },
+                    'tickangle': 90
                 }
             }
         }
@@ -99,7 +133,8 @@ def index():
     
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON, 
-                           genre_names=genre_names, genre_counts=genre_counts)
+                           genre_names=genre_names, genre_counts=genre_counts,
+                           category_names=category_names, category_counts=category_counts)
 
 
 # web page that handles user query and displays model results

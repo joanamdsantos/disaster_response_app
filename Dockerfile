@@ -1,3 +1,8 @@
+# Sources:
+    # https://moez-62905.medium.com/build-machine-learning-pipeline-in-python-and-deploy-on-cloud-easily-2f907ff1af1f
+    # https://dev.to/ankur0904/hosting-a-flask-web-server-on-railway-free-1049
+    # https://medium.com/@komalminhas.96/a-step-by-step-guide-to-build-and-push-your-own-docker-images-to-dockerhub-709963d4a8bc
+
 FROM python:3.8-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1

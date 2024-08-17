@@ -91,6 +91,11 @@ def build_model():
     Returns:
         A GridSearchCV object containing the optimized model.
     """
+    # Hyperparameter tuning for XGBoost sources:
+        # https://xgboost.readthedocs.io/en/latest/parameter.html
+        # https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/
+        # https://medium.com/@rithpansanga/optimizing-xgboost-a-guide-to-hyperparameter-tuning-77b6e48e289d
+        # https://www.kaggle.com/code/tilii7/hyperparameter-grid-search-with-xgboost/notebook
     
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),

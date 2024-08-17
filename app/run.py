@@ -15,6 +15,7 @@ from plotly.graph_objs import Bar
 #from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+# Problems with nltk, add the import
 import nltk
 nltk.download('punkt_tab')
 nltk.download('wordnet')
@@ -35,30 +36,17 @@ def tokenize(text):
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 
-#database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
-#database_path = '/app/data/DisasterResponse.db'
-#engine = create_engine(f'sqlite:///{database_path}')
+# Code needed to complete docker image build 
+# database_path = os.path.join(os.path.dirname(__file__), '../data/DisasterResponse.db')
+# database_path = '../data/DisasterResponse.db'
+# engine = create_engine(f'sqlite:///{database_path}')
 
 df = pd.read_sql_table('DisasterResponse', engine)
 
-# load model
-#model = joblib.load("/app/models/classifier.pk")
+# load model 
+model = joblib.load("../models/classifier.pk")
 
-class CustomUnpickler(pickle.Unpickler):
-    def find_class(self, module, name):
-        if module == "__main__" and name == "tokenize":
-            return tokenize
-        if module == "xgboost.compat" and name == "XGBoostLabelEncoder":
-            return XGBoostLabelEncoder
-        return super().find_class(module, name)
-
-def custom_load(file_path):
-    with open(file_path, 'rb') as f:
-        return CustomUnpickler(f).load()
-
-# Custom load method
-model = custom_load("../models/classifier.pk")
-
+# for docker build
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
@@ -71,11 +59,20 @@ def index():
     genre_names = list(genre_counts.index)
     
     # extract data for category distribution
+    # Introduced a bar chart to show the distribution of message genres by ascending order
     category_counts = df.iloc[:, 4:].sum().sort_values(ascending=False)
     category_names = list(category_counts.index)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
+    
+    # Introduced a bar chart to show the distribution of message genres, 
+    # changed the color on the bar chart to green and made the font bold on the titles
+    # Sources: 
+    # https://www.kaggle.com/code/bombatkarvivek/plotly-tutorial-for-beginners
+    # https://plotly.com/python/figure-labels/
+    # https://plotly.com/python/bar-charts/
+    
     graphs = [
         {
             'data': [
@@ -156,6 +153,8 @@ def go():
 
 
 def main():
+    # added port for doker image build and cloud sourcing on railway.app
+    # Source: https://docs.railway.app/guides/public-networking
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port, debug=True)
 
